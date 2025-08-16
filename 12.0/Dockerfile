@@ -5,6 +5,19 @@ FROM python:3.7-buster
 # Generate locale C.UTF-8 for postgres and general locale data
 ENV LANG C.UTF-8
 
+# assuming your base image is buster
+FROM debian:buster
+
+# Switch to archive repos so image build works
+RUN set -eux; \
+    echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until; \
+    printf '%s\n' \
+      'deb http://archive.debian.org/debian buster main contrib non-free' \
+      'deb http://archive.debian.org/debian-security buster/updates main contrib non-free' \
+      > /etc/apt/sources.list; \
+    apt-get -o Acquire::AllowInsecureRepositories=true update
+
+
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
